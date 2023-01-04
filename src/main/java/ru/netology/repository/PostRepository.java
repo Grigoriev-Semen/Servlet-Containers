@@ -19,31 +19,20 @@ public class PostRepository {
     }
 
     public Optional<Post> getById(long id) {
-        if (repository.containsKey(id)) {
-            return Optional.of(repository.get(id));
-        } else {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(repository.getOrDefault(id, null));
     }
 
-    public Post save(Post post) {
-        long id = post.getId();
-
-        if (id > counter.get() || id < 0) {
-            return null;
-        }
-
-        if (id == 0) {
-            id = counter.addAndGet(1);
-            post.setId(id);
-            repository.put(id, post);
-        } else {
-            repository.replace(id, post);
-        }
-        return repository.get(id);
+    public Optional<Post> save(Post post) {
+        return Optional.ofNullable(post)
+                .filter((v) -> v.getId() == 0)
+                .map((v) -> {
+                    post.setId(counter.addAndGet(1));
+                    repository.put(counter.get(), post);
+                    return v;
+                }).or(() -> Optional.ofNullable(repository.computeIfPresent(post.getId(), (k, o) -> post)));
     }
 
-    public void removeById(long id) {
-        repository.remove(id);
+    public boolean removeById(long id) {
+        return repository.remove(id) != null;
     }
 }

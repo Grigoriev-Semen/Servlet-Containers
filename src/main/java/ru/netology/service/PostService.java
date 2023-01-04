@@ -18,15 +18,16 @@ public class PostService {
     }
 
     public Post getById(long id) {
-        return repository.getById(id).orElseThrow(() -> new NotFoundException("No content with id = " + id));
+        return repository.getById(id)
+                .orElseThrow(() -> new NotFoundException("No content with id = " + id));
     }
 
     public Post save(Post post) {
-        return repository.save(post);
+        return repository.save(post).get();
     }
 
-    public void removeById(long id) {
-        repository.removeById(id);
+    public boolean removeById(long id) {
+        return repository.removeById(id);
     }
 }
 

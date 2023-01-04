@@ -50,7 +50,10 @@ public class PostController {
     }
 
     public void removeById(long id, HttpServletResponse response) {
-        service.removeById(id);
-        response.setStatus(HttpServletResponse.SC_OK);
+        if (service.removeById(id)) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 }
